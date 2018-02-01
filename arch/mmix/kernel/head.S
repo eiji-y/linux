@@ -124,7 +124,7 @@ ret_to_user:
 	geta	$0,_aux_reg
 	ldo	$0,$0,0
 	sto	$255,$0,AUX_REG_KSP
-	ldo	$255,$0,AUX_REG_USP
+	ldo	$255,$0,AUX_REG_UCP
 	unsave	0,$255
 	geta	$255,_savedK
 	ldo	$255,$255,0
@@ -151,7 +151,7 @@ ret_from_syscall:
 	geta	$0,_aux_reg
 	ldo	$0,$0,0
 	sto	$255,$0,AUX_REG_KSP
-	ldo	$255,$0,AUX_REG_USP
+	ldo	$255,$0,AUX_REG_UCP
 	unsave	0,$255
 	geta	$255,_savedK
 	ldo	$255,$255,0

@@ -587,7 +587,11 @@ static int unuse_vma(struct vm_area_struct *vma,
 			continue;
 		if (unuse_pud_range(vma, pgd, addr, next, entry, page))
 			return 1;
+#ifdef	CONFIG_MMIX
+	} while (addr = next, addr != end);
+#else
 	} while (pgd++, addr = next, addr != end);
+#endif
 	return 0;
 }
 

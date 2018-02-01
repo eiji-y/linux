@@ -27,6 +27,7 @@
 #define EM_X86_64	62	/* AMD x86-64 */
 #define EM_S390		22	/* IBM S/390 */
 #define EM_CRIS		76	/* Axis Communications 32-bit embedded processor */
+#define	EM_MMIX		80	/* Donald Knuth's educational 64-bit processor */
 #define EM_V850		87	/* NEC v850 */
 #define EM_M32R		88	/* Renesas M32R */
 #define EM_H8_300	46	/* Renesas H8/300,300H,H8S */

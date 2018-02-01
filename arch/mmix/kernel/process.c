@@ -103,9 +103,10 @@ int copy_thread(int nr, unsigned long clone_flags, unsigned long usp,
 //	printk("copy_thread(): usp = %lx, regs = %p\n", usp, regs);
 
 	/* copy user context */
-	p->thread.usp = usp;
+//	p->thread.usp = usp;
 	memcpy(p->thread.gpr, current->thread.gpr, sizeof(p->thread.gpr));
 	memcpy(p->thread.lr, current->thread.lr, sizeof(p->thread.lr));
+	p->thread.gpr[254] = usp;
 
 	rG = getspr(rG);
 
@@ -163,17 +164,10 @@ struct task_struct fastcall * __switch_to(struct task_struct *prev_p, struct tas
 #if	1
 //	aux_reg.ksp = next_thread->ksp;
 	aux_reg.usp = next_thread->usp;
-	aux_reg.ucp = (unsigned long)next_thread->gpr;
-	putspr(rN, (1<<1)|1);
-	putspr(rN, next_thread->gpr);
-	putspr(rN, (0<<1)|1);
+	aux_reg.ucp = __pa(next_thread->gpr);
 #endif
 	prev = _switch(prev_thread, next_thread);
 #if	0
-	putspr(rN, (1<<1)|1);
-	putspr(rN, prev_thread->lr);
-printk("ext[1] = %lx\n", getspr(rN));
-	putspr(rN, (0<<1)|1);
 //	aux_reg.ksp = prev_thread->ksp;
 	aux_reg.usp = prev_thread->usp;
 #endif
@@ -189,7 +183,8 @@ int sys_clone(unsigned long clone_flags, unsigned long usp,
 	      struct pt_regs *regs)
 {
 	if (usp == 0)
-		usp = aux_reg.usp;	// usp = current->thread.usp;
+//		usp = aux_reg.usp;	// usp = current->thread.usp;
+		usp = current->thread.gpr[254];
  	return do_fork(clone_flags, usp, regs, 0, parent_tidp, child_tidp);
 }
 /*
@@ -292,7 +287,8 @@ int execve(const char *file, char **argv, char **envp)
 		putspr(rZZ, regs.rZZ);
 
 //printk("sys_execve(): preempt_count = %d\n", preempt_count());
-		syscall_ret(p->thread.usp);
+//		syscall_ret(p->thread.usp);
+		syscall_ret(__pa(p->thread.gpr));
 
 		// NOT REACHED
 	}
@@ -434,8 +430,6 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int exstack)
 		goto up_ret;
 	}
 	mm->total_vm++;
-	// without following line, bash doesn't work. why??
-	make_pages_present(vma->vm_start, vma->vm_end);
 up_ret:
 	up_write(&mm->mmap_sem);
 	return ret;

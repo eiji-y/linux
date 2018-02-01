@@ -123,12 +123,14 @@ void pmd_clear_bad(pmd_t *pmd)
  */
 static void free_pte_range(struct mmu_gather *tlb, pmd_t *pmd)
 {
+#ifndef	CONFIG_MMIX
 	struct page *page = pmd_page(*pmd);
 	pmd_clear(pmd);
 	pte_lock_deinit(page);
 	pte_free_tlb(tlb, page);
 	dec_zone_page_state(page, NR_PAGETABLE);
 	tlb->mm->nr_ptes--;
+#endif
 }
 
 static inline void free_pmd_range(struct mmu_gather *tlb, pud_t *pud,
@@ -259,7 +261,11 @@ void free_pgd_range(struct mmu_gather **tlb,
 		if (pgd_none_or_clear_bad(pgd))
 			continue;
 		free_pud_range(*tlb, pgd, addr, next, floor, ceiling);
+#ifdef	CONFIG_MMIX
+	} while (addr = next, addr != end);
+#else
 	} while (pgd++, addr = next, addr != end);
+#endif
 
 	if (!(*tlb)->fullmm)
 		flush_tlb_pgtables((*tlb)->mm, start, end);
@@ -611,7 +617,11 @@ int copy_page_range(struct mm_struct *dst_mm, struct mm_struct *src_mm,
 		if (copy_pud_range(dst_mm, src_mm, dst_pgd, src_pgd,
 						vma, addr, next))
 			return -ENOMEM;
+#ifdef	CONFIG_MMIX
+	} while (addr = next, addr != end);
+#else
 	} while (dst_pgd++, src_pgd++, addr = next, addr != end);
+#endif
 	return 0;
 }
 
@@ -764,7 +774,11 @@ static unsigned long unmap_page_range(struct mmu_gather *tlb,
 		}
 		next = zap_pud_range(tlb, vma, pgd, addr, next,
 						zap_work, details);
+#ifdef	CONFIG_MMIX
+	} while (addr = next, (addr != end && *zap_work > 0));
+#else
 	} while (pgd++, addr = next, (addr != end && *zap_work > 0));
+#endif
 	tlb_end_vma(tlb, vma);
 
 	return addr;
@@ -1172,7 +1186,11 @@ int zeromap_page_range(struct vm_area_struct *vma,
 		err = zeromap_pud_range(mm, pgd, addr, next, prot);
 		if (err)
 			break;
+#ifdef	CONFIG_MMIX
+	} while (addr = next, addr != end);
+#else
 	} while (pgd++, addr = next, addr != end);
+#endif
 	return err;
 }
 
@@ -1364,7 +1382,11 @@ int remap_pfn_range(struct vm_area_struct *vma, unsigned long addr,
 				pfn + (addr >> PAGE_SHIFT), prot);
 		if (err)
 			break;
+#ifdef	CONFIG_MMIX
+	} while (addr = next, addr != end);
+#else
 	} while (pgd++, addr = next, addr != end);
+#endif
 	return err;
 }
 EXPORT_SYMBOL(remap_pfn_range);

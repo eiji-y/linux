@@ -305,7 +305,11 @@ static inline int check_pgd_range(struct vm_area_struct *vma,
 		if (check_pud_range(vma, pgd, addr, next, nodes,
 				    flags, private))
 			return -EIO;
+#ifdef	CONFIG_MMIX
+	} while (addr = next, addr != end);
+#else
 	} while (pgd++, addr = next, addr != end);
+#endif
 	return 0;
 }
 

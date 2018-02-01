@@ -111,7 +111,11 @@ static void change_protection(struct vm_area_struct *vma,
 		if (pgd_none_or_clear_bad(pgd))
 			continue;
 		change_pud_range(mm, pgd, addr, next, newprot);
+#ifdef	CONFIG_MMIX
+	} while (addr = next, addr != end);
+#else
 	} while (pgd++, addr = next, addr != end);
+#endif
 	flush_tlb_range(vma, start, end);
 }
 

@@ -290,7 +290,11 @@ static inline void smaps_pgd_range(struct vm_area_struct *vma,
 		if (pgd_none_or_clear_bad(pgd))
 			continue;
 		smaps_pud_range(vma, pgd, addr, next, mss);
+#ifdef	CONFIG_MMIX
+	} while (addr = next, addr != end);
+#else
 	} while (pgd++, addr = next, addr != end);
+#endif
 }
 
 static int show_smap(struct seq_file *m, void *v)

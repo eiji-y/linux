@@ -109,7 +109,8 @@ extern unsigned long ioremap_bot, ioremap_base;
 #define pte_to_pgoff(pte)	(pte_val(pte) >> 3)
 
 #define	pmd_clear(pmdp)		do { pmd_val(*(pmdp)) = 0; } while (0)
-#define pmd_none(pmd)		(!pmd_val(pmd))
+
+static inline int pmd_none(pmd_t pmd)	{ return 0; }
 #define	pmd_bad(pmd)		0
 #define	pmd_present(pmd)	1
 

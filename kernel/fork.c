@@ -300,7 +300,11 @@ static inline int mm_alloc_pgd(struct mm_struct * mm)
 
 static inline void mm_free_pgd(struct mm_struct * mm)
 {
+#ifdef	CONFIG_MMIX
+	pgd_free(mm);
+#else
 	pgd_free(mm->pgd);
+#endif
 }
 #else
 #define dup_mmap(mm, oldmm)	(0)

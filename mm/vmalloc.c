@@ -80,7 +80,11 @@ void unmap_vm_area(struct vm_struct *area)
 		if (pgd_none_or_clear_bad(pgd))
 			continue;
 		vunmap_pud_range(pgd, addr, next);
+#ifdef	CONFIG_MMIX
+	} while (addr = next, addr != end);
+#else
 	} while (pgd++, addr = next, addr != end);
+#endif
 	flush_tlb_kernel_range((unsigned long) area->addr, end);
 }
 
@@ -152,7 +156,11 @@ int map_vm_area(struct vm_struct *area, pgprot_t prot, struct page ***pages)
 		err = vmap_pud_range(pgd, addr, next, prot, pages);
 		if (err)
 			break;
+#ifdef	CONFIG_MMIX
+	} while (addr = next, addr != end);
+#else
 	} while (pgd++, addr = next, addr != end);
+#endif
 	flush_cache_vmap((unsigned long) area->addr, end);
 	return err;
 }

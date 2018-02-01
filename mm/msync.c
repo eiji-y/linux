@@ -114,7 +114,11 @@ static unsigned long msync_page_range(struct vm_area_struct *vma,
 		if (pgd_none_or_clear_bad(pgd))
 			continue;
 		ret += msync_pud_range(vma, pgd, addr, next);
+#ifdef	CONFIG_MMIX
+	} while (addr = next, addr != end);
+#else
 	} while (pgd++, addr = next, addr != end);
+#endif
 	return ret;
 }
 
