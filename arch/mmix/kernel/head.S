@@ -76,11 +76,9 @@ _aux_reg:
 
 	.globl	dynamic_trap
 dynamic_trap:
-	/* new */
 	geta	$255,_aux_reg
 	ldo	$255,$255,0
 	ldo	$255,$255,AUX_REG_UCP
-	/* new */
 	save	$255,0	#
 	/* user mode ? */
 	get	$0,rWW
@@ -105,11 +103,9 @@ dynamic_trap:
 
 	.globl	forced_trap
 forced_trap:
-	/* new */
 	geta	$255,_aux_reg
 	ldo	$255,$255,0
 	ldo	$255,$255,AUX_REG_UCP
-	/* new */
 	save	$255,0		/* save user stack */
 	geta	$254,_aux_reg
 	ldo	$254,$254,0
