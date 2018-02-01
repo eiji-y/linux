@@ -1,0 +1,43 @@
+mainmenu "Linux/MMIX Kernel Configuration"
+
+config MMIX
+	bool
+	default y
+
+config MMU
+	bool
+	default y
+
+config GENERIC_HARDIRQS
+	bool
+	default y
+
+config RWSEM_GENERIC_SPINLOCK
+        bool
+        default y
+
+config GENERIC_FIND_NEXT_BIT
+        bool
+        default y
+
+config GENERIC_HWEIGHT
+        bool
+        default y
+
+config GENERIC_CALIBRATE_DELAY
+	bool
+	default y
+
+source "init/Kconfig"
+source kernel/Kconfig.hz
+source "mm/Kconfig"
+
+source "fs/Kconfig.binfmt"
+
+source "net/Kconfig"
+source "drivers/Kconfig"
+source "fs/Kconfig"
+
+source "lib/Kconfig"
+source "lib/Kconfig.debug"
+
