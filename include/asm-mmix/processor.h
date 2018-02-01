@@ -25,7 +25,6 @@
 
 struct __aux_reg {
 	unsigned long ksp;
-	unsigned long usp;
 	unsigned long ucp;	// user context pointer.
 };
 
@@ -55,7 +54,6 @@ extern long kernel_thread(int (*fn)(void *), void *arg, unsigned long flags);
 
 struct thread_struct {
 	unsigned long	ksp;		/* Kernel stack pointer */
-	unsigned long	usp;		/* User stack pointer */
 	mm_segment_t	fs;		/* for get_fs() validation */
 	unsigned long	gpr[256];
 	unsigned long	lr[256];	/* local registers */

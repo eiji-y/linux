@@ -149,7 +149,6 @@ static int flush_registerstack(int newL)
 		return -EFAULT;
 	rS++;
 
-	aux_reg.usp = (unsigned long)rS;
 	current->thread.gpr[10] = (unsigned long)rS;
 	current->thread.gpr[11] = (unsigned long)rS;
 	current->thread.gpr[20] = newL;

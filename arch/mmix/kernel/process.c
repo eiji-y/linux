@@ -103,7 +103,6 @@ int copy_thread(int nr, unsigned long clone_flags, unsigned long usp,
 //	printk("copy_thread(): usp = %lx, regs = %p\n", usp, regs);
 
 	/* copy user context */
-//	p->thread.usp = usp;
 	memcpy(p->thread.gpr, current->thread.gpr, sizeof(p->thread.gpr));
 	memcpy(p->thread.lr, current->thread.lr, sizeof(p->thread.lr));
 	p->thread.gpr[254] = usp;
@@ -159,18 +158,8 @@ struct task_struct fastcall * __switch_to(struct task_struct *prev_p, struct tas
 
 	local_irq_save(flags);
 
-//	prev_thread->ksp = aux_reg.ksp;
-	prev_thread->usp = aux_reg.usp;
-#if	1
-//	aux_reg.ksp = next_thread->ksp;
-	aux_reg.usp = next_thread->usp;
 	aux_reg.ucp = __pa(next_thread->gpr);
-#endif
 	prev = _switch(prev_thread, next_thread);
-#if	0
-//	aux_reg.ksp = prev_thread->ksp;
-	aux_reg.usp = prev_thread->usp;
-#endif
 
 	local_irq_restore(flags);
 //	printk("prev_p = %p\n", prev);
@@ -183,7 +172,6 @@ int sys_clone(unsigned long clone_flags, unsigned long usp,
 	      struct pt_regs *regs)
 {
 	if (usp == 0)
-//		usp = aux_reg.usp;	// usp = current->thread.usp;
 		usp = current->thread.gpr[254];
  	return do_fork(clone_flags, usp, regs, 0, parent_tidp, child_tidp);
 }
@@ -279,7 +267,6 @@ int execve(const char *file, char **argv, char **envp)
 		aux_reg.ksp = p->thread.ksp = (unsigned long)hw_stack;
 
 //printk("jump to user: ksp = %lx\n", aux_reg.ksp);
-//printk("jump to user: usr = %lx\n", aux_reg.usp);
 		putspr(rBB, regs.rBB);
 		putspr(rWW, regs.rWW);
 		putspr(rXX, regs.rXX);
@@ -287,7 +274,6 @@ int execve(const char *file, char **argv, char **envp)
 		putspr(rZZ, regs.rZZ);
 
 //printk("sys_execve(): preempt_count = %d\n", preempt_count());
-//		syscall_ret(p->thread.usp);
 		syscall_ret(__pa(p->thread.gpr));
 
 		// NOT REACHED
@@ -473,31 +459,6 @@ void start_thread(struct pt_regs *regs, unsigned long start, unsigned long sp)
 	printk("envp = &sp[1] = %lx\n", &usp[3]);
 #endif
 
-#if	0
-	rG = 0x20;
-
-	// save	(user stack)
-	__put_user(0, hw_stack++);		/* rL */
-	for (i = (int)rG; i < 254; i++)
-		__put_user(p->thread.gpr[i], hw_stack++);/* Gn (0x20 ~ 0x253) */
-	__put_user(sp, hw_stack++);		/* G254 */
-	__put_user(0, hw_stack++);		/* G255 */
-	__put_user(0, hw_stack++);		/* rB */
-	__put_user(0, hw_stack++);		/* rD */
-	__put_user(0, hw_stack++);		/* rE */
-	__put_user(0, hw_stack++);		/* rH */
-	__put_user(0, hw_stack++);		/* rJ */
-	__put_user(0, hw_stack++);		/* rM */
-	__put_user(0, hw_stack++);		/* rR */
-	__put_user(0, hw_stack++);		/* rP */
-	__put_user(0, hw_stack++);		/* rW */
-	__put_user(0, hw_stack++);		/* rX */
-	__put_user(0, hw_stack++);		/* rY */
-	__put_user(0, hw_stack++);		/* rZ */
-	__put_user(rG << 56, hw_stack);		/* rG & rA */
-
-	aux_reg.usp = p->thread.usp = (unsigned long)hw_stack;
-#else
 	p->thread.gpr[rL] = 0;
 	p->thread.gpr[rB] = 0;
 	p->thread.gpr[rD] = 0;
@@ -518,9 +479,6 @@ void start_thread(struct pt_regs *regs, unsigned long start, unsigned long sp)
 
 	p->thread.gpr[254] = sp;
 	p->thread.gpr[255] = 0;
-
-	aux_reg.usp = p->thread.usp = (unsigned long)hw_stack;
-#endif
 
 	regs->rXX = 0x8000000000000000;
 	regs->rWW = start;
