@@ -1,7 +1,7 @@
 /*
  * arch/mmix/kernel/process.c
  *
- *   Copyright (C) 2008-2009 Eiji Yoshiya (eiji-y@pb3.so-net.ne.jp)
+ *   Copyright (C) 2008-2009,2011 Eiji Yoshiya (eiji-y@pb3.so-net.ne.jp)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
