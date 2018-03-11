@@ -15,5 +15,6 @@ void foo(void)
 	DEFINE(KSP, offsetof(struct thread_struct, ksp));
 	DEFINE(AUX_REG_SIZE, sizeof(struct __aux_reg));
 	DEFINE(AUX_REG_KSP, offsetof(struct __aux_reg, ksp));
+	DEFINE(AUX_REG_USP, offsetof(struct __aux_reg, usp));
 	DEFINE(AUX_REG_UCP, offsetof(struct __aux_reg, ucp));
 }

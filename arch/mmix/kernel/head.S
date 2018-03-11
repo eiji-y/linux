@@ -85,6 +85,7 @@ dynamic_trap:
 	bn	$0,1f
 	geta	$254,_aux_reg
 	ldo	$254,$254,0
+	sto	$255,$254,AUX_REG_USP
 	ldo	$255,$254,AUX_REG_KSP
 	unsave	0,$255
 	pushj	$0,do_IRQ
@@ -109,6 +110,7 @@ forced_trap:
 	save	$255,0		/* save user stack */
 	geta	$254,_aux_reg
 	ldo	$254,$254,0
+	sto	$255,$254,AUX_REG_USP
 	ldo	$255,$254,AUX_REG_KSP
 	unsave	0,$255		/* load kernel stack */
 	set	$0,$255
