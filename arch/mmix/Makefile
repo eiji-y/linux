@@ -18,7 +18,8 @@ head-y				:= arch/mmix/kernel/head.o
 libs-y 				+= arch/mmix/lib/
 core-y				+= arch/mmix/kernel/ \
 				   arch/mmix/mm/
-drivers-y			+= arch/mmix/vmmmix_io/
+drivers-$(CONFIG_VMMMIX)	+= arch/mmix/vmmmix_io/
+drivers-$(CONFIG_DE0)		+= arch/mmix/DE0/
 
 all: vmlinux.bin
 

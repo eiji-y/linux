@@ -29,6 +29,21 @@ config GENERIC_CALIBRATE_DELAY
 	default y
 
 source "init/Kconfig"
+
+choice
+	prompt "Board"
+	default VMMMIX
+
+config VMMMIX
+	bool "VMMMIX"
+
+config DE0
+	bool "DE0"
+	help
+	  Terasic Altera DE0 Board.
+
+endchoice
+
 source kernel/Kconfig.hz
 source "mm/Kconfig"
 

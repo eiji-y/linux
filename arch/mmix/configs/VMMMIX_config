@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.18
-# Thu Feb  1 23:14:11 2018
+# Thu Feb  1 23:17:04 2018
 #
 CONFIG_MMIX=y
 CONFIG_MMU=y
@@ -73,8 +73,8 @@ CONFIG_IOSCHED_CFQ=y
 CONFIG_DEFAULT_CFQ=y
 # CONFIG_DEFAULT_NOOP is not set
 CONFIG_DEFAULT_IOSCHED="cfq"
-# CONFIG_VMMMIX is not set
-CONFIG_DE0=y
+CONFIG_VMMMIX=y
+# CONFIG_DE0 is not set
 # CONFIG_HZ_100 is not set
 CONFIG_HZ_250=y
 # CONFIG_HZ_1000 is not set

@@ -112,17 +112,26 @@ struct seq_operations cpuinfo_op = {
 void __init setup_arch(char **cmdline_p)
 {
 	// TODO:
+#ifdef	CONFIG_VMMMIX
 	extern void register_vm_console(void);
+#endif
 	static char cmdline[512];
+#ifdef	CONFIG_VMMMIX
 	char *src = (char *)0x8000000001000000;
 	char *dst = cmdline;
 
 	while (*src)
 		*dst++ = *src++;
+#endif
 	*cmdline_p = cmdline;
 
+#ifdef	CONFIG_VMMMIX
 	boot_mem_size = 0x10000000;
 	register_vm_console();
+#endif
+#ifdef	CONFIG_DE0
+	boot_mem_size = 0x800000;
+#endif
 {
 	unsigned long bootmap_size;
 	extern char _end[];
@@ -135,7 +144,7 @@ void __init setup_arch(char **cmdline_p)
 	bootmap_size = init_bootmem(start >> PAGE_SHIFT,
 					boot_mem_size >> PAGE_SHIFT);
 	free_bootmem(start + bootmap_size,
-			0x10000000 - (start + bootmap_size));
+			boot_mem_size - (start + bootmap_size));
 }
 {
 	unsigned long zones_size[MAX_NR_ZONES], i;
@@ -143,7 +152,7 @@ void __init setup_arch(char **cmdline_p)
 	/*
 	 * All pages are DMA-able so we put them all in the DMA zone.
 	 */
-	zones_size[ZONE_DMA] = 0x10000000 >> PAGE_SHIFT;
+	zones_size[ZONE_DMA] = boot_mem_size >> PAGE_SHIFT;
 	for (i = 1; i < MAX_NR_ZONES; i++)
 		zones_size[i] = 0;
 
