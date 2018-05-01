@@ -25,7 +25,7 @@
 
 #ifdef __KERNEL__
 
-#define CLOCK_TICK_RATE	1024000 /* Underlying HZ */
+#define CLOCK_TICK_RATE	1000 /* Underlying HZ */
 
 typedef unsigned long cycles_t;
 

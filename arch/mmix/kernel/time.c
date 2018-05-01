@@ -27,9 +27,20 @@
 
 #include <asm/reg.h>
 
+#ifdef CONFIG_DE0
+/* clock is 50MHz */
+#define	SYS_CLOCK	(50*1000*1000)
+#else
+#define	SYS_CLOCK	5000
+#endif
+#define CYCLE_TIME	((1000*1000*1000)/CLOCK_TICK_RATE)
+
+static long long current_time;
+
 irqreturn_t timer_interrupt(int irq, void *data, struct pt_regs *regs)
 {
-	putspr(rI, 5000);
+	current_time += CYCLE_TIME;
+	putspr(rI, 10*SYS_CLOCK/CLOCK_TICK_RATE);
 	update_process_times(user_mode(regs));
 	do_timer(regs);
 	return IRQ_HANDLED;
@@ -40,6 +51,8 @@ struct rtc {
 	long	sec;		/* seconds */
 	long	usec;		/* microseconds */
 };
+
+#ifndef CONFIG_GENERIC_TIME
 
 static  volatile struct rtc *__rtc = (struct rtc *)0x8001000000000010;
 
@@ -61,12 +74,24 @@ int do_settimeofday(struct timespec *tv)
 	return 0;
 }
 
+#endif
+
+/* time in nanosec unit */
 unsigned long long sched_clock(void)
 {
-	long	cc;
+	unsigned long cc;
+	unsigned long ns;	
+	unsigned long flags;
 
-	asm	("get	%0, rC":"=&r"(cc));
-	return cc;
+	local_irq_save(flags);
+	asm	("get	%0, rI":"=&r"(cc));
+	ns = current_time;
+	local_irq_restore(flags);
+
+	if (cc > 10*SYS_CLOCK/CLOCK_TICK_RATE)
+		return ns + CYCLE_TIME;
+	return ns + ((10*SYS_CLOCK/CLOCK_TICK_RATE - cc) *
+			(CYCLE_TIME/(10*SYS_CLOCK/CLOCK_TICK_RATE)));
 }
 
 static struct irqaction irq7  = { timer_interrupt, IRQF_DISABLED, CPU_MASK_NONE, "timer", NULL, NULL};
@@ -76,5 +101,5 @@ void __init time_init(void)
 	printk("time_init(): Not Yet\n");
 
 	setup_irq(7, &irq7);
-	putspr(rI, 5000);
+	putspr(rI, 10*SYS_CLOCK/CLOCK_TICK_RATE);
 }

@@ -42,6 +42,6 @@ struct pt_regs {
 	(long)0; \
 })
 
-#define user_mode(regs) (((regs)->rWW & 0x8000000000000000) != 0)
+#define user_mode(regs) (((regs)->rWW & 0x8000000000000000) == 0)
 
 #endif /* _ASM_MMIX_PTRACE_H */

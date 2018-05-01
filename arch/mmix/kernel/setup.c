@@ -61,6 +61,7 @@ void (*pm_power_off)(void) = machine_power_off;
 
 void progress(const char * fmt, ...)
 {
+#ifdef	CONFIG_VMMMIX
 	int *port = (int *)0x8001000000000000;
 	char ch;
 
@@ -69,6 +70,17 @@ void progress(const char * fmt, ...)
 			;
 		*port = ch|0x100;
 	}
+#endif
+#ifdef	CONFIG_DE0
+	extern void de0_putch(char c);
+	char ch;
+
+	while ((ch = *fmt++)) {
+		if (ch == '\n')
+			de0_putch('\r');
+		de0_putch(ch);
+	}
+#endif
 
 	dump_stack();
 	for (;;)
@@ -115,6 +127,9 @@ void __init setup_arch(char **cmdline_p)
 #ifdef	CONFIG_VMMMIX
 	extern void register_vm_console(void);
 #endif
+#ifdef	CONFIG_DE0
+	extern void register_de0_console(void);
+#endif
 	static char cmdline[512];
 #ifdef	CONFIG_VMMMIX
 	char *src = (char *)0x8000000001000000;
@@ -131,6 +146,7 @@ void __init setup_arch(char **cmdline_p)
 #endif
 #ifdef	CONFIG_DE0
 	boot_mem_size = 0x800000;
+	register_de0_console();
 #endif
 {
 	unsigned long bootmap_size;

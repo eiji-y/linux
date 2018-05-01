@@ -4,6 +4,10 @@ config MMIX
 	bool
 	default y
 
+config GENERIC_TIME
+	bool
+	default y
+
 config MMU
 	bool
 	default y

@@ -13,7 +13,7 @@
 
 static int cx = 0;
 static int cy = 0;
-static char *vram = 0;
+static char *vram = (char *)VRAM;
 
 static void scroll(void)
 {
@@ -34,7 +34,7 @@ static void scroll(void)
 		*dst++ = 0;
 }
 
-static void putch(char c)
+void de0_putch(char c)
 {
 	switch (c) {
 	default:
@@ -111,13 +111,10 @@ void de0_cons_tty_close(struct tty_struct * tty, struct file * filp)
 static int de0_cons_tty_write(struct tty_struct *tty,
 			const unsigned char *buf, int count)
 {
-	int *port = (int *)0x8001000000000000;
 	int i;
 
 	for (i = 0; i < count; i++) {
-		while (*port & 0x100)
-			;
-		*port = *buf++|0x100;
+		de0_putch(*buf++);
 	}
 	return count;
 }
@@ -174,12 +171,12 @@ module_init(de0_console_init);
 static void de0_console_write(struct console *c, const char *s, unsigned n)
 {
 	while (n-- && *s) {
-		char c;
+		char ch;
 
-		c = *s++;
-		if (c == '\n')
-			putch('\r');
-		putch(c);
+		ch = *s++;
+		if (ch == '\n')
+			de0_putch('\r');
+		de0_putch(ch);
 	}
 }
 

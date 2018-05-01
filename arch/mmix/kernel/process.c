@@ -552,6 +552,7 @@ void dump_stack(void)
 	struct task_struct * p = current;
 	unsigned long *hw_stack = (unsigned long *)
 		((unsigned long)((p->thread_info + 1) + 7) & ~7);
+	int nframes = 4;
 
 //	show_stack(current, NULL);
 	__asm__ __volatile__(
@@ -562,7 +563,7 @@ void dump_stack(void)
 	print_symbol("caller -> %s\n", getspr(rJ));
 
 	printk("hw stack:\n");
-	while (hw_stack < sp) {
+	while ((hw_stack < sp)  && (nframes--)) {
 		long frame_size;
 
 		frame_size = (long)*--sp;

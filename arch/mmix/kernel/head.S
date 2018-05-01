@@ -65,6 +65,9 @@ __start:
 	add	$254, $255, 0
 	incl	$254, THREAD_SIZE
 
+	geta	$0, forced_trap
+	put	rT, $0
+
 	pushj	$0, start_kernel
 
 	trap	0, 0, 0
@@ -96,6 +99,7 @@ dynamic_trap:
 	set	$0,$255 #
 	pushj	$1,do_IRQ
 	set	$255,$0	#
+
 	unsave	0,$255	#
 	geta	$255,_savedK
 	ldo	$255,$255,0
@@ -104,6 +108,16 @@ dynamic_trap:
 
 	.globl	forced_trap
 forced_trap:
+	get	$255,rXX
+	bn	$255,syscall
+	get	$255,rJ
+	pushj	$255,emulate_mmix
+	put	rJ,$255
+	geta	$255,_savedK
+	ldo	$255,$255,0
+	ldo	$255,$255,0
+	resume	1
+syscall:
 	geta	$255,_aux_reg
 	ldo	$255,$255,0
 	ldo	$255,$255,AUX_REG_UCP

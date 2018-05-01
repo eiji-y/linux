@@ -125,9 +125,14 @@ void do_IRQ(void)
 	regs.rZZ = getspr(rZZ);
 
 	if (is_interrupt(irq)) {
+		unsigned long saved2K = savedK;
+		savedK = 0;
+
 		irq_enter();
 		generic_handle_irq(irq, &regs);
 		irq_exit();
+
+		savedK = saved2K;
 	} else {
 		struct irqaction *action = irq_desc[irq].action;
 		unsigned long Q;
