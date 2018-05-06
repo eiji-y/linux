@@ -552,7 +552,7 @@ void dump_stack(void)
 	struct task_struct * p = current;
 	unsigned long *hw_stack = (unsigned long *)
 		((unsigned long)((p->thread_info + 1) + 7) & ~7);
-	int nframes = 4;
+	int nframes = 100;
 
 //	show_stack(current, NULL);
 	__asm__ __volatile__(

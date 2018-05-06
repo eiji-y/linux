@@ -26,6 +26,7 @@
 #include <asm/reg.h>
 
 unsigned long savedK = 0;
+unsigned long intrEn = 0;
 
 static void dt_enable_irq(unsigned int irq)
 {
@@ -125,14 +126,13 @@ void do_IRQ(void)
 	regs.rZZ = getspr(rZZ);
 
 	if (is_interrupt(irq)) {
-		unsigned long saved2K = savedK;
-		savedK = 0;
+		intrEn = 0;
 
 		irq_enter();
 		generic_handle_irq(irq, &regs);
 		irq_exit();
 
-		savedK = saved2K;
+		intrEn = 1;
 	} else {
 		struct irqaction *action = irq_desc[irq].action;
 		unsigned long Q;

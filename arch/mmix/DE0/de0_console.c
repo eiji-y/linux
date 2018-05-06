@@ -201,3 +201,36 @@ register_de0_console(void)
 {
 	register_console(&de0_console_info);
 }
+
+#if	0
+static void prt_hex_one(unsigned char val)
+{
+	val &= 0xf;
+	if (val < 10)
+		de0_putch('0' + val);
+	else
+		de0_putch('a' + val - 10);
+}
+
+void de0_prt_hex(unsigned long val)
+{
+	prt_hex_one(val >> 60);
+	prt_hex_one(val >> 56);
+	prt_hex_one(val >> 52);
+	prt_hex_one(val >> 48);
+	prt_hex_one(val >> 44);
+	prt_hex_one(val >> 40);
+	prt_hex_one(val >> 36);
+	prt_hex_one(val >> 32);
+	prt_hex_one(val >> 28);
+	prt_hex_one(val >> 24);
+	prt_hex_one(val >> 20);
+	prt_hex_one(val >> 16);
+	prt_hex_one(val >> 12);
+	prt_hex_one(val >> 8);
+	prt_hex_one(val >> 4);
+	prt_hex_one(val >> 0);
+	de0_putch('\r');
+	de0_putch('\n');
+}
+#endif

@@ -74,6 +74,7 @@ __start:
 
 _savedK:
 	octa	savedK
+	octa	intrEn
 _aux_reg:
 	octa	aux_reg
 
@@ -114,8 +115,13 @@ forced_trap:
 	pushj	$255,emulate_mmix
 	put	rJ,$255
 	geta	$255,_savedK
+	ldo	$255,$255,8	// intrEn
+	ldo	$255,$255,0
+	bz	$255,1f
+	geta	$255,_savedK
 	ldo	$255,$255,0
 	ldo	$255,$255,0
+1:
 	resume	1
 syscall:
 	geta	$255,_aux_reg

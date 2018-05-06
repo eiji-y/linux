@@ -28,6 +28,7 @@
 
 
 extern unsigned long savedK;
+extern unsigned long intrEn;
 
 extern void mymessage(char *);
 
@@ -36,21 +37,20 @@ static inline void local_irq_disable(void)
 	unsigned long rK = 0;
 
 	__asm__ __volatile__("put rK,%0"::"r"(rK):"memory");
+	intrEn = 0;
 }
 
 static inline void local_irq_enable(void)
 {
 	unsigned long rK = savedK;
 
+	intrEn = 1;
 	__asm__ __volatile__("put rK,%0"::"r"(rK):"memory");
 }
 
 static inline void local_irq_save_ptr(unsigned long *flags)
 {
-	unsigned long rK;
-
-	__asm__ __volatile__("get %0,rK":"=r"(rK));
-	*flags = rK;
+	*flags = intrEn;
 	local_irq_disable();
 }
 
@@ -58,17 +58,14 @@ static inline void local_irq_save_ptr(unsigned long *flags)
 
 static inline void local_irq_restore(unsigned long flags)
 {
-	unsigned long rK = (flags)?savedK:0;
+	unsigned long rK = (intrEn = flags)?savedK:0;
 
 	__asm__ __volatile__("put rK,%0"::"r"(rK):"memory");
 }
 
 static inline unsigned long local_get_flags(void)
 {
-	unsigned long rK;
-
-	__asm__ __volatile__("get %0,rK":"=r"(rK)::"memory");
-	return rK;
+	return intrEn;
 }
 
 #define local_save_flags(flags)	((flags) = local_get_flags())

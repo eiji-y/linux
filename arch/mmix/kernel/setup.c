@@ -147,6 +147,8 @@ void __init setup_arch(char **cmdline_p)
 #ifdef	CONFIG_DE0
 	boot_mem_size = 0x800000;
 	register_de0_console();
+
+	ROOT_DEV = MKDEV(HD_MAJOR, 2);
 #endif
 {
 	unsigned long bootmap_size;
